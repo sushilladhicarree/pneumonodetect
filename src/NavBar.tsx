@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Dashboard from './Dashboard.tsx';
+import Upload from './Upload.tsx';
 
 export const NavBar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -58,10 +59,7 @@ export const NavBar = () => {
         return <Dashboard />;
       case 'upload_section':
         return (
-          <section id="upload_section" className="p-6 bg-white rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-4">Upload Section</h2>
-            <p>Upload your X-ray images here...</p>
-          </section>
+          <Upload/>
         );
       case 'analysis_results':
         return (

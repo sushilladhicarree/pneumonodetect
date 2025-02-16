@@ -131,19 +131,7 @@ export const Dashboard = () => {
     </div>
   </div>
 </div>
-{/* <element id="a36ddadd-0e4a-4cf4-9e12-c7dbf43b0345" data-section-id="a36ddadd-0e4a-4cf4-9e12-c7dbf43b0345"/> */}
-
-
-<section id="upload_section" className="p-6 bg-gray-50">
-  <div className="max-w-3xl mx-auto">
-    <div className="text-center mb-8">
-      <h1 className="text-3xl font-bold text-gray-800">Upload X-ray Image</h1>
-      <p className="text-gray-600 mt-2">Supported formats: JPEG, PNG | Max file size: 10MB</p>
-    </div>
-    </div>
-</section>
-    <div className="bg-white rounded-lg border border-gray-200 p-6"></div>
-    </div>
+ </div>
   );
 };
 

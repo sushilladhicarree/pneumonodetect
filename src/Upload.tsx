@@ -1,0 +1,227 @@
+import React, { useState, useRef } from 'react';
+
+
+export const Upload: React.FC = () => {
+  // State management
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
+
+  // Validation functions
+  const validateFile = (file: File): boolean => {
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+      setError('Please upload a valid JPEG or PNG file.');
+      return false;
+    }
+    
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setError('File size should not exceed 10MB.');
+      return false;
+    }
+
+    return true;
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  // Event handlers
+  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (dropZoneRef.current) {
+      dropZoneRef.current.classList.remove('border-blue-400');
+    }
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelection(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    if (e.target.files && e.target.files[0]) {
+      handleFileSelection(e.target.files[0]);
+    }
+  };
+
+  const handleFileSelection = (file: File): void => {
+    setError('');
+    
+    if (validateFile(file)) {
+      setFile(file);
+      
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        if (e.target && typeof e.target.result === 'string') {
+          setPreview(e.target.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+ 
+  const removeFile = (): void => {
+    setFile(null);
+    setPreview('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Drag events
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (dropZoneRef.current) {
+      dropZoneRef.current.classList.add('border-blue-400');
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (dropZoneRef.current) {
+      dropZoneRef.current.classList.remove('border-blue-400');
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (dropZoneRef.current) {
+      dropZoneRef.current.classList.add('border-blue-400');
+    }
+  };
+
+  return (
+    <section id="upload_section" className="p-6 bg-gray-50">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Upload X-ray Image</h1>
+          <p className="text-gray-600 mt-2">Supported formats: JPEG, PNG | Max file size: 10MB</p>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          {/* Upload Area */}
+          {!file && (
+            <div
+              ref={dropZoneRef}
+              className="border-2 border-dashed border-blue-200 rounded-lg p-8 text-center hover:border-blue-400 transition-colors"
+              onDrop={handleFileDrop}
+              onDragOver={handleDragOver}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+            >
+              <input
+                type="file"
+                id="file-input"
+                ref={fileInputRef}
+                className="hidden"
+                accept=".jpg,.jpeg,.png"
+                onChange={handleFileInput}
+              />
+              <div className="space-y-4">
+                <svg className="mx-auto h-12 w-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                </svg>
+                <div className="text-gray-600">
+                  <span className="font-medium">Drag and drop</span> your X-ray image here<br />
+                  or{' '}
+                  <span
+                    className="text-blue-600 hover:text-blue-500 cursor-pointer"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    browse files
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Preview Area */}
+          {file && (
+            <div className="mt-6">
+              <div className="relative">
+                <img
+                  className="w-full h-64 object-contain rounded-lg border border-gray-200"
+                  src={preview}
+                  alt="Preview"
+                />
+                <button
+                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none"
+                  onClick={removeFile}
+                  type="button"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+              <div className="mt-4">
+                <p className="text-sm text-gray-600">
+                  {file.name} ({formatFileSize(file.size)})
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Validation Message */}
+          {error && (
+            <div className="mt-4 p-4 rounded-lg bg-red-50 text-red-600">
+              {error}
+            </div>
+          )}
+
+          {/* Action Button */}
+          <div className="mt-6">
+            <button
+              disabled={!file}
+              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+              type="button"
+            >
+              Analyze Image
+            </button>
+          </div>
+        </div>
+
+        {/* Instructions */}
+        <div className="mt-8 bg-blue-50 rounded-lg p-6 border border-blue-100">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Guidelines for Best Results</h3>
+          <ul className="space-y-3 text-gray-600">
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Ensure the X-ray image is clear and well-focused
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Upload front view chest X-rays only
+            </li>
+            <li className="flex items-center">
+              <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              File size should not exceed 10MB
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Upload;
