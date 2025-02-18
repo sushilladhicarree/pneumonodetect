@@ -1,0 +1,306 @@
+{
+	"info": {
+		"_postman_id": "07a93864-9031-4345-9d8f-a42b26a4b9db",
+		"name": "Pneumonia Detection System APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39222641"
+	},
+	"item": [
+		{
+			"name": "Login Refresh & Access token Generation API",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"11198211\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/token/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"token",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get new Access token using Refresh token API",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"refresh\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3MTMzMTY4NywiaWF0IjoxNzM5Nzk1Njg3LCJqdGkiOiJhYmEwMjZhN2ExMzk0MGRhODJmMzBkMGMzNDAxYWY1YSIsInVzZXJfaWQiOjJ9.HnvqPrcSkU-e0iLZ42OdOLvTIWUG9XJyu7AVi05SrME\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/token/refresh/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"token",
+						"refresh",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Xray, customer details and get result",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMxNjg3LCJpYXQiOjE3Mzk3OTU2ODcsImp0aSI6IjE1ZDM0NjI5MjNlMTRjYzdiYjc5MjVjN2ZhMzRmNzZmIiwidXNlcl9pZCI6Mn0.pbYUY3yBkFVjl93dQPQ-LpPIlKnyiTwlcvwZSuV2Xs8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Richa Tripathi",
+							"type": "text"
+						},
+						{
+							"key": "age",
+							"value": "21",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "richa2004@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "contact_number",
+							"value": "9821345672",
+							"type": "text"
+						},
+						{
+							"key": "xray_image",
+							"type": "file",
+							"src": "/C:/Users/Bikalpa/Desktop/Pneumonia Detection using Deep Learning/chest_xray/test/PNEUMONIA/person1_virus_13.jpeg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/customer/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"customer",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all Customers and details",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMxNjg3LCJpYXQiOjE3Mzk3OTU2ODcsImp0aSI6IjE1ZDM0NjI5MjNlMTRjYzdiYjc5MjVjN2ZhMzRmNzZmIiwidXNlcl9pZCI6Mn0.pbYUY3yBkFVjl93dQPQ-LpPIlKnyiTwlcvwZSuV2Xs8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/customer/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"customer",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all reports with Customer details",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMxNjg3LCJpYXQiOjE3Mzk3OTU2ODcsImp0aSI6IjE1ZDM0NjI5MjNlMTRjYzdiYjc5MjVjN2ZhMzRmNzZmIiwidXNlcl9pZCI6Mn0.pbYUY3yBkFVjl93dQPQ-LpPIlKnyiTwlcvwZSuV2Xs8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/report/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"report",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Customers by name",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMxNjg3LCJpYXQiOjE3Mzk3OTU2ODcsImp0aSI6IjE1ZDM0NjI5MjNlMTRjYzdiYjc5MjVjN2ZhMzRmNzZmIiwidXNlcl9pZCI6Mn0.pbYUY3yBkFVjl93dQPQ-LpPIlKnyiTwlcvwZSuV2Xs8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/customer/search/?name=richa",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"customer",
+						"search",
+						""
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "richa"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "To get Total number of scans done by the professional",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMxNjg3LCJpYXQiOjE3Mzk3OTU2ODcsImp0aSI6IjE1ZDM0NjI5MjNlMTRjYzdiYjc5MjVjN2ZhMzRmNzZmIiwidXNlcl9pZCI6Mn0.pbYUY3yBkFVjl93dQPQ-LpPIlKnyiTwlcvwZSuV2Xs8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/total-scans/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"total-scans",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "To get details of the Medical Professional/Insitution",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMxNjg3LCJpYXQiOjE3Mzk3OTU2ODcsImp0aSI6IjE1ZDM0NjI5MjNlMTRjYzdiYjc5MjVjN2ZhMzRmNzZmIiwidXNlcl9pZCI6Mn0.pbYUY3yBkFVjl93dQPQ-LpPIlKnyiTwlcvwZSuV2Xs8",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/current-user-details/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"current-user-details",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
