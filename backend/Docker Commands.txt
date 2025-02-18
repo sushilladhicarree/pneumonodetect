@@ -1,0 +1,2 @@
+docker build --tag pds-python-django-backend .
+docker run --publish 8000:8000 pds-python-django-backend
