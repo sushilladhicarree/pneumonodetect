@@ -123,6 +123,40 @@ export const Upload: React.FC = () => {
     alert("Patient data stored. Analysis functionality goes here.");
   };
 
+  const handleSumbit = async (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+
+    const payload = new FormData();
+    if (file) {
+      payload.append("xray_image", file);
+    }
+
+    payload.append("name", patientName);
+    payload.append("age", age);
+    payload.append("email", email);
+    payload.append("contact_number", phone);
+
+    try {
+      const response = await fetch("http://localhost:8000/api/customer/", {
+        method: "POST",
+        body: payload,
+        headers: {
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMxNjg3LCJpYXQiOjE3Mzk3OTU2ODcsImp0aSI6IjE1ZDM0NjI5MjNlMTRjYzdiYjc5MjVjN2ZhMzRmNzZmIiwidXNlcl9pZCI6Mn0.pbYUY3yBkFVjl93dQPQ-LpPIlKnyiTwlcvwZSuV2Xs8",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+      } else {
+        setError("Failed to upload image. Please try again.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <section id="upload_section" className="p-6 bg-gray-50">
       <div className="max-w-3xl mx-auto">
@@ -135,7 +169,10 @@ export const Upload: React.FC = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <form
+          onSubmit={handleSumbit}
+          className="bg-white rounded-lg border border-gray-200 p-6"
+        >
           {/* Upload Area */}
           {!file && (
             <div
@@ -264,14 +301,14 @@ export const Upload: React.FC = () => {
           <div className="mt-6">
             <button
               disabled={!file}
-              onClick={handleAnalyze}
+              // onClick={handleAnalyze}
               className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
-              type="button"
+              type="submit"
             >
               Analyze Image
             </button>
           </div>
-        </div>
+        </form>
 
         {/* Instructions */}
         <div className="mt-8 bg-blue-50 rounded-lg p-6 border border-blue-100">
