@@ -65,7 +65,7 @@ const dashboardData = {
     {
       icon: iconPaths.checkCircle,
       title: "Accuracy Rate",
-      value: "96%",
+      value: "90%",
       color: "green",
     },
     {

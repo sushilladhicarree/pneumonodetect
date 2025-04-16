@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Clock, Download, Eye, Search, User, AlertCircle, ArrowLeft } from "lucide-react";
+import {
+  Clock,
+  Download,
+  Eye,
+  Search,
+  User,
+  AlertCircle,
+  ArrowLeft,
+} from "lucide-react";
 import { PatientReport } from "./types";
 
 interface PatientData {
@@ -14,12 +22,12 @@ interface PatientData {
 
 const Result: React.FC = () => {
   const navigate = useNavigate();
-  
+
   // Processing state
   const [isProcessing, setIsProcessing] = useState(true);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  
+
   // Analysis data
   const [confidenceScore, setConfidenceScore] = useState(0);
   const [hasPneumonia, setHasPneumonia] = useState(false);
@@ -31,13 +39,13 @@ const Result: React.FC = () => {
     email: "",
     phone: "",
   });
-  
+
   // Search and filtering
   const [searchQuery, setSearchQuery] = useState("");
   const [resultFilter, setResultFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("30");
   const [searchResults, setSearchResults] = useState<any[]>([]);
-  
+
   // Reports
   const [reports, setReports] = useState<PatientReport[]>([]);
   const [filteredReports, setFilteredReports] = useState<PatientReport[]>([]);
@@ -49,14 +57,14 @@ const Result: React.FC = () => {
   useEffect(() => {
     const checkAndLoadData = () => {
       const stored = localStorage.getItem("patientData");
-      
+
       if (!stored) {
         setIsError(true);
         setErrorMessage("No patient data found. Please upload an X-ray first.");
         setIsProcessing(false);
         return false;
       }
-      
+
       try {
         const data = JSON.parse(stored);
         setPatientData(data);
@@ -70,7 +78,7 @@ const Result: React.FC = () => {
     };
 
     const hasData = checkAndLoadData();
-    
+
     if (hasData) {
       // Simulate or fetch analysis results
       const timer = setTimeout(() => {
@@ -79,25 +87,25 @@ const Result: React.FC = () => {
           if (analysisData) {
             const data = JSON.parse(analysisData);
             // Use data from API if available
-            setConfidenceScore(data.confidence || 87);
+            setConfidenceScore(data.confidence || 90);
             setHasPneumonia(data.result === "Pneumonia");
           } else {
             // Default values if no API data
-            setConfidenceScore(87);
+            setConfidenceScore(90);
             setHasPneumonia(true);
           }
-          
+
           setAnalysisTime(new Date().toLocaleTimeString());
           setIsProcessing(false);
         } catch (error) {
           console.error("Error processing analysis data:", error);
-          setConfidenceScore(87);
+          setConfidenceScore(90);
           setHasPneumonia(true);
           setAnalysisTime(new Date().toLocaleTimeString());
           setIsProcessing(false);
         }
       }, 3000);
-      
+
       return () => clearTimeout(timer);
     }
   }, []);
@@ -107,24 +115,26 @@ const Result: React.FC = () => {
     const fetchReports = async () => {
       setIsLoadingReports(true);
       setReportsError("");
-      
+
       try {
         const response = await fetch("http://127.0.0.1:8000/api/report/", {
           headers: {
             Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMxNjg3LCJpYXQiOjE3Mzk3OTU2ODcsImp0aSI6IjE1ZDM0NjI5MjNlMTRjYzdiYjc5MjVjN2ZhMzRmNzZmIiwidXNlcl9pZCI6Mn0.pbYUY3yBkFVjl93dQPQ-LpPIlKnyiTwlcvwZSuV2Xs8`,
           },
         });
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch reports: ${response.status}`);
         }
-        
+
         const reportData = await response.json();
         setReports(reportData);
         setFilteredReports(reportData);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setReportsError("Failed to load historical reports. Please try again later.");
+        setReportsError(
+          "Failed to load historical reports. Please try again later."
+        );
       } finally {
         setIsLoadingReports(false);
       }
@@ -176,30 +186,30 @@ const Result: React.FC = () => {
   // Apply filters to reports
   useEffect(() => {
     if (reports.length === 0 || searchResults.length > 0) return;
-    
+
     let filtered = [...reports];
-    
+
     // Filter by result type
     if (resultFilter) {
-      filtered = filtered.filter(report => 
-        resultFilter === "pneumonia" 
-          ? report.result === "Pneumonia" 
+      filtered = filtered.filter((report) =>
+        resultFilter === "pneumonia"
+          ? report.result === "Pneumonia"
           : report.result === "Normal"
       );
     }
-    
+
     // Filter by time period (days)
     if (timeFilter) {
       const daysAgo = parseInt(timeFilter);
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - daysAgo);
-      
-      filtered = filtered.filter(report => {
+
+      filtered = filtered.filter((report) => {
         const reportDate = new Date(report.report_date);
         return reportDate >= cutoffDate;
       });
     }
-    
+
     setFilteredReports(filtered);
   }, [reports, resultFilter, timeFilter, searchResults.length]);
 
@@ -210,8 +220,8 @@ const Result: React.FC = () => {
 
   // Render patient info cards
   const renderPatientInfo = (
-    label: string, 
-    value: string, 
+    label: string,
+    value: string,
     icon: React.ReactNode
   ) => (
     <div className="flex items-center p-4 bg-white rounded-lg border border-gray-100 shadow-sm">
@@ -267,7 +277,7 @@ const Result: React.FC = () => {
                 </h1>
                 <p className="text-gray-600">Completed at {analysisTime}</p>
               </div>
-              <button 
+              <button
                 onClick={handleBackToUpload}
                 className="flex items-center text-blue-600 hover:text-blue-800"
               >
@@ -452,7 +462,7 @@ const Result: React.FC = () => {
                   </select>
                 </div>
               </div>
-              
+
               {isLoadingReports ? (
                 <div className="p-10 text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4" />
@@ -486,120 +496,136 @@ const Result: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {(searchResults.length > 0 ? searchResults : filteredReports).length > 0 ? (
-                        (searchResults.length > 0 ? searchResults : filteredReports).map(
-                          (entry, index) => (
-                            <tr key={index} className="hover:bg-gray-50">
-                              {entry.report_date ? (
-                                // Render report entry
-                                <>
-                                  <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900">
-                                      {entry?.report_date?.split("T")[0]}
+                      {(searchResults.length > 0
+                        ? searchResults
+                        : filteredReports
+                      ).length > 0 ? (
+                        (searchResults.length > 0
+                          ? searchResults
+                          : filteredReports
+                        ).map((entry, index) => (
+                          <tr key={index} className="hover:bg-gray-50">
+                            {entry.report_date ? (
+                              // Render report entry
+                              <>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {entry?.report_date?.split("T")[0]}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {entry?.report_date
+                                      ?.split("T")[1]
+                                      ?.split(".")[0] || ""}
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {entry.customer.name}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    ID: {entry.customer.id}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    Age: {entry.customer.age}
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <span
+                                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                                      entry.result === "Pneumonia"
+                                        ? "bg-red-100 text-red-800"
+                                        : "bg-green-100 text-green-800"
+                                    }`}
+                                  >
+                                    {entry.result === "Pneumonia"
+                                      ? "Pneumonia Detected"
+                                      : "Normal"}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="flex items-center">
+                                    <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                                      <div
+                                        className="bg-blue-600 h-2 rounded-full"
+                                        style={{
+                                          width: `${entry.confidence || 90}%`,
+                                        }}
+                                      />
                                     </div>
-                                    <div className="text-xs text-gray-500">
-                                      {entry?.report_date?.split("T")[1]?.split(".")[0] || ""}
-                                    </div>
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900">
-                                      {entry.customer.name}
-                                    </div>
-                                    <div className="text-sm text-gray-500">
-                                      ID: {entry.customer.id}
-                                    </div>
-                                    <div className="text-sm text-gray-500">
-                                      Age: {entry.customer.age}
-                                    </div>
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap">
-                                    <span
-                                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                                        entry.result === "Pneumonia"
-                                          ? "bg-red-100 text-red-800"
-                                          : "bg-green-100 text-green-800"
-                                      }`}
-                                    >
-                                      {entry.result === "Pneumonia"
-                                        ? "Pneumonia Detected"
-                                        : "Normal"}
+                                    <span className="text-sm text-gray-600">
+                                      {entry.confidence || 90}%
                                     </span>
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex items-center">
-                                      <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                                        <div
-                                          className="bg-blue-600 h-2 rounded-full"
-                                          style={{ width: `${entry.confidence || 100}%` }}
-                                        />
-                                      </div>
-                                      <span className="text-sm text-gray-600">
-                                        {entry.confidence || 100}%
-                                      </span>
-                                    </div>
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex space-x-3">
-                                      <button
-                                        onClick={() =>
-                                          setModalImage(
-                                            `${entry?.customer?.xray_image}`
-                                          )
-                                        }
-                                        className="inline-flex items-center text-blue-600 hover:text-blue-800"
-                                      >
-                                        <Eye className="w-4 h-4 mr-1" /> View
-                                      </button>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="flex space-x-3">
+                                    <button
+                                      onClick={() =>
+                                        setModalImage(
+                                          `${entry?.customer?.xray_image}`
+                                        )
+                                      }
+                                      className="inline-flex items-center text-blue-600 hover:text-blue-800"
+                                    >
+                                      <Eye className="w-4 h-4 mr-1" /> View
+                                    </button>
 
-                                      <button className="inline-flex items-center text-blue-600 hover:text-blue-800">
-                                        <Download className="w-4 h-4 mr-1" /> Download
-                                      </button>
-                                    </div>
-                                  </td>
-                                </>
-                              ) : (
-                                // Render customer object when searching
-                                <>
-                                  <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">N/A</div>
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900">
-                                      {entry.name}
-                                    </div>
-                                    <div className="text-sm text-gray-500">
-                                      ID: {entry.id}
-                                    </div>
-                                    <div className="text-sm text-gray-500">
-                                      Age: {entry.age}
-                                    </div>
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    No result data
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    –
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {entry.xray_image ? (
-                                      <button
-                                        onClick={() => setModalImage(`${entry.xray_image}`)}
-                                        className="inline-flex items-center text-blue-600 hover:text-blue-800"
-                                      >
-                                        <Eye className="w-4 h-4 mr-1" /> View
-                                      </button>
-                                    ) : (
-                                      "–"
-                                    )}
-                                  </td>
-                                </>
-                              )}
-                            </tr>
-                          )
-                        )
+                                    <button className="inline-flex items-center text-blue-600 hover:text-blue-800">
+                                      <Download className="w-4 h-4 mr-1" />{" "}
+                                      Download
+                                    </button>
+                                  </div>
+                                </td>
+                              </>
+                            ) : (
+                              // Render customer object when searching
+                              <>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="text-sm text-gray-500">
+                                    N/A
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {entry.name}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    ID: {entry.id}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    Age: {entry.age}
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  No result data
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  –
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {entry.xray_image ? (
+                                    <button
+                                      onClick={() =>
+                                        setModalImage(`${entry.xray_image}`)
+                                      }
+                                      className="inline-flex items-center text-blue-600 hover:text-blue-800"
+                                    >
+                                      <Eye className="w-4 h-4 mr-1" /> View
+                                    </button>
+                                  ) : (
+                                    "–"
+                                  )}
+                                </td>
+                              </>
+                            )}
+                          </tr>
+                        ))
                       ) : (
                         <tr>
-                          <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                          <td
+                            colSpan={5}
+                            className="px-6 py-8 text-center text-gray-500"
+                          >
                             No reports found with the current filters.
                           </td>
                         </tr>
@@ -612,7 +638,7 @@ const Result: React.FC = () => {
           </>
         )}
       </div>
-      
+
       {/* Image modal */}
       {modalImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
