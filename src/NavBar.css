@@ -1,0 +1,109 @@
+.navbar-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 16rem;
+    height: 100vh;
+    background: #eff6ff; /* blue-50 */
+    border-right: 1px solid #dbeafe; /* blue-100 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 30;
+    transition: transform 0.3s;
+    transform: translateX(0);
+  }
+  @media (max-width: 1024px) {
+    .navbar-sidebar {
+      transform: translateX(-100%);
+    }
+    .navbar-sidebar.open {
+      transform: translateX(0);
+    }
+  }
+  .navbar-logo {
+    padding: 1rem;
+    border-bottom: 1px solid #dbeafe;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2563eb;
+    background: #fff;
+  }
+  .navbar-links {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+    gap: 0.25rem;
+  }
+  .navbar-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 500;
+    border-right: 4px solid transparent;
+    border-radius: 0 1rem 1rem 0;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+  }
+  .navbar-link:hover {
+    background: #dbeafe;
+    color: #2563eb;
+  }
+  .navbar-link.active {
+    color: #2563eb;
+    background: #dbeafe;
+    border-right: 4px solid #2563eb;
+    font-weight: 700;
+  }
+  .navbar-link-icon {
+    margin-right: 0.75rem;
+    display: flex;
+    align-items: center;
+  }
+  .nav-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .navbar-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-top: 1px solid #dbeafe;
+    background: #fff;
+  }
+  .navbar-profile-icon {
+    background: #dbeafe;
+    border-radius: 9999px;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .navbar-profile-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #334155;
+  }
+  .navbar-profile-email {
+    font-size: 0.875rem;
+    color: #64748b;
+  }
+  .navbar-mobile-toggle {
+    display: none;
+    position: absolute;
+    top: 1rem;
+    right: -3rem;
+    background: #eff6ff;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    z-index: 40;
+    cursor: pointer;
+  }
+  @media (max-width: 1024px) {
+    .navbar-mobile-toggle {
+      display: block;
+    }
+  }

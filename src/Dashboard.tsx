@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 // Simplified SVG paths in a separate object for cleaner code
 const iconPaths = {
@@ -76,21 +77,21 @@ const dashboardData = {
   ],
   quickActions: [
     {
-      href: "#upload_section",
+      route: "/upload",
       icon: iconPaths.upload,
       title: "New Scan",
       description: "Upload X-ray image",
       color: "blue",
     },
     {
-      href: "#analysis_results",
+      route: "/result",
       icon: iconPaths.chart,
       title: "View Results",
       description: "Check analysis history",
       color: "green",
     },
     {
-      href: "#settings",
+      route: "/settings",
       icon: iconPaths.settings,
       title: "Settings",
       description: "Configure preferences",
@@ -128,7 +129,8 @@ const Icon: React.FC<{ children: React.ReactNode; className?: string }> = ({
   </svg>
 );
 
-export const Dashboard = () => {
+const Dashboard = () => {
+  const navigate = useNavigate();
   const storedPatient = localStorage.getItem("patientData");
   const patientData = storedPatient ? JSON.parse(storedPatient) : null;
 
@@ -176,10 +178,11 @@ export const Dashboard = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {dashboardData.quickActions.map((action, index) => (
-            <a
+            <button
               key={index}
-              href={action.href}
-              className={`flex items-center p-4 bg-${action.color}-50 rounded-lg hover:bg-${action.color}-100 transition-colors`}
+              type="button"
+              onClick={() => navigate(action.route)}
+              className={`flex items-center p-4 bg-${action.color}-50 rounded-lg hover:bg-${action.color}-100 transition-colors w-full text-left`}
             >
               <div
                 className={`p-3 rounded-full bg-${action.color}-100 text-${action.color}-600`}
@@ -190,7 +193,7 @@ export const Dashboard = () => {
                 <p className="font-medium text-gray-800">{action.title}</p>
                 <p className="text-sm text-gray-600">{action.description}</p>
               </div>
-            </a>
+            </button>
           ))}
         </div>
       </div>

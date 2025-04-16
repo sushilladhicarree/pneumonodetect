@@ -1,45 +1,28 @@
-import React, { useState, useEffect } from "react";
-import Dashboard from "./Dashboard.tsx";
-import Upload from "./Upload.tsx";
-import Result from "./Result.tsx";
-import Settings from "./Settings.tsx";
+import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
+import "./NavBar.css";
 
-export const NavBar = () => {
+const NavBar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("dashboard_main");
 
-  // New useEffect: Listen to hash changes and update activeSection accordingly.
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.slice(1);
-      setActiveSection(hash || "dashboard_main");
-    };
-    window.addEventListener("hashchange", handleHashChange);
-    // Set initial active section based on hash
-    handleHashChange();
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
-
-  // Navigation items configuration
   const navItems = [
     {
-      id: "dashboard_main",
+      to: "/dashboard",
       title: "Dashboard",
       icon: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <svg className="nav-icon" fill="currentColor" viewBox="0 0 20 20">
           <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"></path>
           <path d="M3 10a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z"></path>
           <path d="M3 16a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z"></path>
         </svg>
       ),
-      component: <Dashboard />,
     },
     {
-      id: "upload_section",
+      to: "/upload",
       title: "Upload",
       icon: (
         <svg
-          className="w-5 h-5"
+          className="nav-icon"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -52,14 +35,13 @@ export const NavBar = () => {
           ></path>
         </svg>
       ),
-      component: <Upload />,
     },
     {
-      id: "analysis_results",
+      to: "/result",
       title: "Results",
       icon: (
         <svg
-          className="w-5 h-5"
+          className="nav-icon"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -72,14 +54,13 @@ export const NavBar = () => {
           ></path>
         </svg>
       ),
-      component: <Result />,
     },
     {
-      id: "settings",
+      to: "/settings",
       title: "Settings",
       icon: (
         <svg
-          className="w-5 h-5"
+          className="nav-icon"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -98,91 +79,54 @@ export const NavBar = () => {
           ></path>
         </svg>
       ),
-      component: <Settings />,
     },
   ];
 
-  const getLinkClassName = (sectionId: string) => {
-    const baseClass = "flex items-center px-6 py-3 transition-colors";
-    return `${baseClass} ${
-      activeSection === sectionId
-        ? "text-blue-600 bg-blue-100 border-r-4 border-blue-600"
-        : "text-gray-600 hover:bg-blue-50"
-    }`;
-  };
-
-  const renderContent = () => {
-    const currentSection = navItems.find((item) => item.id === activeSection);
-    return currentSection ? currentSection.component : navItems[0].component;
-  };
-
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <nav
-        className={`fixed lg:static w-64 h-full bg-blue-50 border-r border-blue-100 transition-all duration-300 transform ${
-          isMobileMenuOpen
-            ? "translate-x-0"
-            : "lg:translate-x-0 -translate-x-full"
-        } z-30`}
-      >
-        {/* Logo */}
-        <div className="p-4 border-b border-blue-100">
-          <div className="text-2xl font-bold text-blue-600">PneumoDetect</div>
-        </div>
-
-        {/* Navigation Links */}
-        <div className="py-4">
-          {navItems.map((item) => (
-            <a
-              key={item.id}
-              href={`#${item.id}`}
-              className={getLinkClassName(item.id)}
-              onClick={(e) => {
-                e.preventDefault();
-                setActiveSection(item.id);
-                window.location.hash = item.id; // update URL hash
-              }}
-            >
-              <span className="mr-3">{item.icon}</span>
-              {item.title}
-            </a>
-          ))}
-        </div>
-
-        {/* User Profile Footer */}
-        <div className="absolute bottom-0 w-full border-t border-blue-100 p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <svg
-                className="w-8 h-8 rounded-full bg-blue-100 p-2 text-blue-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                ></path>
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-700">User Profile</p>
-              <p className="text-xs text-gray-500">user@example.com</p>
-            </div>
-          </div>
-        </div>
+    <aside className={`navbar-sidebar${isMobileMenuOpen ? " open" : ""}`}>
+      <div className="navbar-logo">PneumoDetect</div>
+      <nav className="navbar-links">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) =>
+              isActive ? "navbar-link active" : "navbar-link"
+            }
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <span className="navbar-link-icon">{item.icon}</span>
+            {item.title}
+          </NavLink>
+        ))}
       </nav>
-
-      {/* Mobile Menu Toggle Button */}
+      <div className="navbar-profile">
+        <div className="navbar-profile-icon">
+          <svg
+            className="nav-icon"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            ></path>
+          </svg>
+        </div>
+        <div>
+          <div className="navbar-profile-name">User Profile</div>
+          <div className="navbar-profile-email">user@example.com</div>
+        </div>
+      </div>
       <button
-        className="lg:hidden fixed top-4 right-4 z-40 bg-blue-50 rounded-lg p-2 focus:outline-none"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="navbar-mobile-toggle"
+        onClick={() => setIsMobileMenuOpen((open) => !open)}
       >
         <svg
-          className="w-6 h-6 text-blue-600"
+          className="nav-icon"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -204,76 +148,7 @@ export const NavBar = () => {
           )}
         </svg>
       </button>
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-y-auto bg-gray-50 p-6">
-        <header className="bg-white border-b border-gray-200 mb-6 rounded-lg shadow">
-          <div className="px-6 py-4 flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-gray-800">
-              {navItems.find((item) => item.id === activeSection)?.title}
-            </h1>
-
-            {/* Header Actions */}
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-64 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-blue-500"
-                />
-                <svg
-                  className="absolute right-3 top-2.5 w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </div>
-
-              <button className="p-2 rounded-lg hover:bg-gray-100">
-                <svg
-                  className="w-6 h-6 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                  />
-                </svg>
-              </button>
-
-              <button className="p-2 rounded-lg hover:bg-gray-100">
-                <svg
-                  className="w-6 h-6 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </header>
-
-        {renderContent()}
-      </div>
-    </div>
+    </aside>
   );
 };
 
