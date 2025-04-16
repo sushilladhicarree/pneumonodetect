@@ -4,7 +4,7 @@ import { AlertCircle, Upload as UploadIcon, Check } from "lucide-react";
 
 export const Upload: React.FC = () => {
   const navigate = useNavigate();
-  
+
   // State management
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
@@ -19,14 +19,14 @@ export const Upload: React.FC = () => {
   const [age, setAge] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  
+
   // Form validation
   const [formErrors, setFormErrors] = useState({
     name: "",
     age: "",
     email: "",
     phone: "",
-    file: ""
+    file: "",
   });
 
   // Check if we already have data in progress
@@ -51,17 +51,23 @@ export const Upload: React.FC = () => {
     // Validate file type
     const validTypes = ["image/jpeg", "image/png"];
     if (!validTypes.includes(file.type)) {
-      setFormErrors(prev => ({...prev, file: "Please upload a valid JPEG or PNG file."}));
+      setFormErrors((prev) => ({
+        ...prev,
+        file: "Please upload a valid JPEG or PNG file.",
+      }));
       return false;
     }
 
     // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      setFormErrors(prev => ({...prev, file: "File size should not exceed 10MB."}));
+      setFormErrors((prev) => ({
+        ...prev,
+        file: "File size should not exceed 10MB.",
+      }));
       return false;
     }
 
-    setFormErrors(prev => ({...prev, file: ""}));
+    setFormErrors((prev) => ({ ...prev, file: "" }));
     return true;
   };
 
@@ -72,7 +78,7 @@ export const Upload: React.FC = () => {
       age: "",
       email: "",
       phone: "",
-      file: formErrors.file
+      file: formErrors.file,
     };
 
     // Name validation
@@ -105,7 +111,7 @@ export const Upload: React.FC = () => {
     if (!phone.trim()) {
       errors.phone = "Phone number is required";
       isValid = false;
-    } else if (!phoneRegex.test(phone.replace(/[-()\s]/g, ''))) {
+    } else if (!phoneRegex.test(phone.replace(/[-()\s]/g, ""))) {
       errors.phone = "Please enter a valid phone number";
       isValid = false;
     }
@@ -197,27 +203,29 @@ export const Upload: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    
+
     // Validate form
     if (!validateForm()) {
       setError("Please fix the errors in the form before submitting.");
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     // Save form data to localStorage for persistence
-    const patientData = { 
+    const patientData = {
       id: `PT-${Date.now().toString().slice(-8)}`,
-      name: patientName, 
-      age, 
-      email, 
+      name: patientName,
+      age,
+      email,
       phone,
-      imagePreview: preview
+      imagePreview: preview,
     };
     localStorage.setItem("patientData", JSON.stringify(patientData));
 
@@ -237,7 +245,8 @@ export const Upload: React.FC = () => {
         method: "POST",
         body: payload,
         headers: {
-          Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMxNjg3LCJpYXQiOjE3Mzk3OTU2ODcsImp0aSI6IjE1ZDM0NjI5MjNlMTRjYzdiYjc5MjVjN2ZhMzRmNzZmIiwidXNlcl9pZCI6Mn0.pbYUY3yBkFVjl93dQPQ-LpPIlKnyiTwlcvwZSuV2Xs8",
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcxMzMxNjg3LCJpYXQiOjE3Mzk3OTU2ODcsImp0aSI6IjE1ZDM0NjI5MjNlMTRjYzdiYjc5MjVjN2ZhMzRmNzZmIiwidXNlcl9pZCI6Mn0.pbYUY3yBkFVjl93dQPQ-LpPIlKnyiTwlcvwZSuV2Xs8",
         },
       });
 
@@ -245,20 +254,26 @@ export const Upload: React.FC = () => {
         const data = await response.json();
         // Store the API response data
         localStorage.setItem("analysisData", JSON.stringify(data));
-        
+
         setSuccess("Upload successful! Redirecting to results...");
-        
+
         // Redirect to results page after short delay
         setTimeout(() => {
           navigate("/result");
         }, 1500);
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Server error occurred");
+        throw new Error(
+          errorData.detail || "Invalid email address / Server error occurred"
+        );
       }
     } catch (error) {
       console.error("Upload error:", error);
-      setError(error instanceof Error ? error.message : "Failed to upload image. Please try again.");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to upload image. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -301,7 +316,9 @@ export const Upload: React.FC = () => {
             <div
               ref={dropZoneRef}
               className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                formErrors.file ? 'border-red-300 bg-red-50' : 'border-blue-200 hover:border-blue-400'
+                formErrors.file
+                  ? "border-red-300 bg-red-50"
+                  : "border-blue-200 hover:border-blue-400"
               }`}
               onDrop={handleFileDrop}
               onDragOver={handleDragOver}
@@ -383,14 +400,14 @@ export const Upload: React.FC = () => {
                 value={patientName}
                 onChange={(e) => setPatientName(e.target.value)}
                 className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full ${
-                  formErrors.name ? 'border-red-300' : 'border-gray-200'
+                  formErrors.name ? "border-red-300" : "border-gray-200"
                 }`}
               />
               {formErrors.name && (
                 <p className="text-red-600 text-sm mt-1">{formErrors.name}</p>
               )}
             </div>
-            
+
             <div>
               <input
                 type="text"
@@ -398,14 +415,14 @@ export const Upload: React.FC = () => {
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full ${
-                  formErrors.age ? 'border-red-300' : 'border-gray-200'
+                  formErrors.age ? "border-red-300" : "border-gray-200"
                 }`}
               />
               {formErrors.age && (
                 <p className="text-red-600 text-sm mt-1">{formErrors.age}</p>
               )}
             </div>
-            
+
             <div>
               <input
                 type="email"
@@ -413,14 +430,14 @@ export const Upload: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full ${
-                  formErrors.email ? 'border-red-300' : 'border-gray-200'
+                  formErrors.email ? "border-red-300" : "border-gray-200"
                 }`}
               />
               {formErrors.email && (
                 <p className="text-red-600 text-sm mt-1">{formErrors.email}</p>
               )}
             </div>
-            
+
             <div>
               <input
                 type="tel"
@@ -428,7 +445,7 @@ export const Upload: React.FC = () => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className={`px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full ${
-                  formErrors.phone ? 'border-red-300' : 'border-gray-200'
+                  formErrors.phone ? "border-red-300" : "border-gray-200"
                 }`}
               />
               {formErrors.phone && (
@@ -446,9 +463,25 @@ export const Upload: React.FC = () => {
             >
               {isLoading ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Processing...
                 </>
