@@ -114,3 +114,152 @@
       display: block;
     }
   }
+  /* Add these styles to your existing NavBar.css file */
+
+.navbar-profile {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-top: 1px solid rgba(229, 231, 235, 0.5);
+  margin-top: auto;
+}
+
+.navbar-profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.navbar-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.navbar-profile-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navbar-profile-email {
+  font-size: 0.75rem;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navbar-logout-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-left: 8px;
+}
+
+.navbar-logout-button:hover {
+  background-color: #f3f4f6;
+  color: #ef4444;
+}
+
+.logout-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Make sure these existing styles are included */
+.navbar-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 16rem;
+  background-color: white;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.navbar-logo {
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #2563eb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.navbar-links {
+  padding: 1rem 0;
+  flex: 1;
+}
+
+.navbar-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: #4b5563;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.navbar-link:hover {
+  background-color: #f3f4f6;
+  color: #2563eb;
+}
+
+.navbar-link.active {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border-right: 3px solid #2563eb;
+}
+
+.navbar-link-icon {
+  margin-right: 0.75rem;
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.navbar-mobile-toggle {
+  display: none;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .navbar-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .navbar-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .navbar-mobile-toggle {
+    display: block;
+  }
+}

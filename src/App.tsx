@@ -6,7 +6,7 @@ import Dashboard from "./Dashboard";
 import Result from "./Result";
 import Upload from "./Upload";
 import Settings from "./Settings";
-import NavBar from "./NavBar";
+
 import ProtectedRoute from "./routes/ProtectedRoutes";
 // import ProtectedRoute from "./ProtectedRoute";
 

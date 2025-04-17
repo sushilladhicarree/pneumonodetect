@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "./context/authContext";
 import "./NavBar.css";
 
 const NavBar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const navItems = [
     {
@@ -116,10 +124,29 @@ const NavBar = () => {
             ></path>
           </svg>
         </div>
-        <div>
-          <div className="navbar-profile-name">User Profile</div>
-          <div className="navbar-profile-email">user@example.com</div>
+        <div className="navbar-profile-info">
+          <div className="navbar-profile-name">Admin</div>
+          <div className="navbar-profile-email">Gandaki Hospital</div>
         </div>
+        <button 
+          onClick={handleLogout}
+          className="navbar-logout-button"
+          title="Logout"
+        >
+          <svg
+            className="nav-icon logout-icon"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            ></path>
+          </svg>
+        </button>
       </div>
       <button
         className="navbar-mobile-toggle"

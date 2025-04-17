@@ -16,7 +16,7 @@
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.5.0"
   },
-  "proxy": "http://127.0.0.1:8000" // or wherever your backend runs
+  "proxy": "http://127.0.0.1:8000" 
 ,
   "devDependencies": {
     " @eslint/js": "^9.19.0",
