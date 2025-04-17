@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./context/authContext";
 
 interface LoginFormData {
   username: string;
@@ -8,13 +9,22 @@ interface LoginFormData {
 }
 
 const Login: React.FC = () => {
+  const { login, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState<LoginFormData>({
     username: "",
     password: "",
     rememberMe: false,
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -26,10 +36,11 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/login/", {
+      const response = await fetch("http://127.0.0.1:8000/api/token/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,17 +54,48 @@ const Login: React.FC = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.detail || "Login failed");
+        throw new Error(data.detail || "Login failed. Please check your credentials.");
       }
 
-      localStorage.setItem("username", data.username);
+      // Store rememberMe preference
+      if (formData.rememberMe) {
+        localStorage.setItem("rememberMe", "true");
+        localStorage.setItem("savedUsername", formData.username);
+      } else {
+        localStorage.removeItem("rememberMe");
+        localStorage.removeItem("savedUsername");
+      }
+
+      // Call login function with tokens and user object
+      await login(
+        { access: data.access, refresh: data.refresh }, // tokens
+        { username: formData.username }                 // user object
+      );
+
+      // Explicitly navigate after successful login
       navigate("/dashboard");
     } catch (err) {
-      console.error(err);
+      console.error("Login error:", err);
+      setError(err instanceof Error ? err.message : "An unknown error occurred");
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Load saved username if rememberMe was checked
+  useEffect(() => {
+    const rememberMe = localStorage.getItem("rememberMe") === "true";
+    if (rememberMe) {
+      const savedUsername = localStorage.getItem("savedUsername");
+      if (savedUsername) {
+        setFormData(prev => ({
+          ...prev,
+          username: savedUsername,
+          rememberMe: true
+        }));
+      }
+    }
+  }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
@@ -64,30 +106,31 @@ const Login: React.FC = () => {
         </p>
 
         <div className="w-full rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
+          {error && (
+            <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label
-                htmlFor="username"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
-                username
+              <label htmlFor="username" className="mb-1 block text-sm font-medium text-gray-700">
+                Username
               </label>
               <input
                 id="username"
                 name="username"
-                type="username"
+                type="text"
                 required
                 value={formData.username}
                 onChange={handleChange}
                 className="w-full rounded-md border border-gray-300 px-3 py-2"
+                autoComplete="username"
               />
             </div>
 
             <div className="mb-4">
-              <label
-                htmlFor="password"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
                 Password
               </label>
               <input
@@ -98,6 +141,7 @@ const Login: React.FC = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full rounded-md border border-gray-300 px-3 py-2"
+                autoComplete="current-password"
               />
             </div>
 
@@ -111,18 +155,12 @@ const Login: React.FC = () => {
                   onChange={handleChange}
                   className="h-4 w-4 rounded border-gray-300 text-blue-600"
                 />
-                <label
-                  htmlFor="rememberMe"
-                  className="ml-2 block text-sm text-gray-700"
-                >
+                <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
                   Remember me
                 </label>
               </div>
               <div className="text-sm">
-                <a
-                  href="/forgot-password"
-                  className="text-blue-500 hover:text-blue-600"
-                >
+                <a href="/forgot-password" className="text-blue-500 hover:text-blue-600">
                   Forgot password?
                 </a>
               </div>
@@ -131,19 +169,18 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-md bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-600"
+              className={`w-full rounded-md px-4 py-2 font-medium text-white ${
+                isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+              }`}
             >
-              Sign in
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>
         </div>
 
         <p className="mt-6 text-center text-gray-600">
-          Not a member?
-          <a
-            href="/register"
-            className="ml-1 text-blue-500 hover:text-blue-600"
-          >
+          Not a member?{' '}
+          <a href="/register" className="text-blue-500 hover:text-blue-600">
             Create an account
           </a>
         </p>

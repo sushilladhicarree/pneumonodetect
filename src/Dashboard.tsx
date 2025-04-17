@@ -1,6 +1,6 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 // Simplified SVG paths in a separate object for cleaner code
 const iconPaths = {
   document: (
@@ -54,65 +54,7 @@ const iconPaths = {
 };
 
 // Dashboard data
-const dashboardData = {
-  stats: [
-    {
-      icon: iconPaths.document,
-      title: "Total Scans",
-      value: "234",
-      color: "blue",
-    },
-    {
-      icon: iconPaths.checkCircle,
-      title: "Accuracy Rate",
-      value: "90%",
-      color: "green",
-    },
-    {
-      icon: iconPaths.clock,
-      title: "Average Time",
-      value: "2.3s",
-      color: "purple",
-    },
-  ],
-  quickActions: [
-    {
-      route: "/upload",
-      icon: iconPaths.upload,
-      title: "New Scan",
-      description: "Upload X-ray image",
-      color: "blue",
-    },
-    {
-      route: "/result",
-      icon: iconPaths.chart,
-      title: "View Results",
-      description: "Check analysis history",
-      color: "green",
-    },
-    {
-      route: "/settings",
-      icon: iconPaths.settings,
-      title: "Settings",
-      description: "Configure preferences",
-      color: "purple",
-    },
-  ],
-  recentActivity: [
-    {
-      icon: iconPaths.checkCircle,
-      title: "Analysis Completed",
-      description: "Result: Normal",
-      time: "2 mins ago",
-    },
-    {
-      icon: iconPaths.upload,
-      title: "New Scan Uploaded",
-      description: "File: chest_xray_001.jpg",
-      time: "5 mins ago",
-    },
-  ],
-};
+
 
 // Reusable icon component
 const Icon: React.FC<{ children: React.ReactNode; className?: string }> = ({
@@ -133,6 +75,97 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const storedPatient = localStorage.getItem("patientData");
   const patientData = storedPatient ? JSON.parse(storedPatient) : null;
+ const [totalScans, setTotalScans] = useState(0);
+
+
+ useEffect(() => {
+  (async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/total-scans/", {
+        headers: {
+          'Accept': 'application/json',// Explicitly request JSON
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        }
+      });
+      
+      console.log("Response", response);
+      
+      // Check both status and content type
+      if (response.status === 200) {
+        setTotalScans(response.data.total_scans);
+      } else {
+        console.error("Unexpected response format:", response.data);
+        // Handle HTML response or other formats
+      }
+    } catch (error) {
+      console.error("Error fetching total scans:", error);
+  
+    }
+  })();
+}, []);
+// ✅ Add dependency array here to run once on mount
+
+
+  
+  const dashboardData = {
+    stats: [
+      {
+        icon: iconPaths.document,
+        title: "Total Scans",
+        value: totalScans,
+        color: "blue",
+      },
+      {
+        icon: iconPaths.checkCircle,
+        title: "Accuracy Rate",
+        value: "90%",
+        color: "green",
+      },
+      {
+        icon: iconPaths.clock,
+        title: "Average Time",
+        value: "2.3s",
+        color: "purple",
+      },
+    ],
+    quickActions: [
+      {
+        route: "/upload",
+        icon: iconPaths.upload,
+        title: "New Scan",
+        description: "Upload X-ray image",
+        color: "blue",
+      },
+      {
+        route: "/result",
+        icon: iconPaths.chart,
+        title: "View Results",
+        description: "Check analysis history",
+        color: "green",
+      },
+      {
+        route: "/settings",
+        icon: iconPaths.settings,
+        title: "Settings",
+        description: "Configure preferences",
+        color: "purple",
+      },
+    ],
+    recentActivity: [
+      {
+        icon: iconPaths.checkCircle,
+        title: "Analysis Completed",
+        description: "Result: Normal",
+        time: "2 mins ago",
+      },
+      {
+        icon: iconPaths.upload,
+        title: "New Scan Uploaded",
+        description: "File: chest_xray_001.jpg",
+        time: "5 mins ago",
+      },
+    ],
+  };
 
   return (
     <div>
