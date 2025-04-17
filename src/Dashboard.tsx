@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// Simplified SVG paths in a separate object for cleaner code
+
+// Define SVG paths for icons to keep the component cleaner
 const iconPaths = {
   document: (
     <path
@@ -53,10 +54,7 @@ const iconPaths = {
   ),
 };
 
-// Dashboard data
-
-
-// Reusable icon component
+// Reusable Icon component to render SVG icons
 const Icon: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
   className,
@@ -73,40 +71,45 @@ const Icon: React.FC<{ children: React.ReactNode; className?: string }> = ({
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  // Retrieve patient data from local storage
   const storedPatient = localStorage.getItem("patientData");
   const patientData = storedPatient ? JSON.parse(storedPatient) : null;
- const [totalScans, setTotalScans] = useState(0);
+  // State to store the total number of scans
+  const [totalScans, setTotalScans] = useState(0);
 
+  // useEffect hook to fetch the total number of scans when the component mounts
+  useEffect(() => {
+    (async () => {
+      try {
+        // Make an asynchronous GET request to the specified API endpoint
+        const response = await axios.get("http://127.0.0.1:8000/api/total-scans/", {
+          headers: {
+            'Accept': 'application/json', // Explicitly request JSON response
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Include authorization token from local storage
+          }
+        });
 
- useEffect(() => {
-  (async () => {
-    try {
-      const response = await axios.get("http://127.0.0.1:8000/api/total-scans/", {
-        headers: {
-          'Accept': 'application/json',// Explicitly request JSON
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        // Log the API response for debugging purposes
+        console.log("Response", response);
+
+        // Check if the API request was successful (status code 200)
+        if (response.status === 200 && response.headers['content-type'].includes('application/json')) {
+          // Update the totalScans state with the value from the API response
+          setTotalScans(response.data.total_scans);
+        } else {
+          // Log an error if the response status is not 200 or if the content type is not JSON
+          console.error("Unexpected response format:", response.data);
+          // Optionally handle HTML responses or other formats here
         }
-      });
-      
-      console.log("Response", response);
-      
-      // Check both status and content type
-      if (response.status === 200) {
-        setTotalScans(response.data.total_scans);
-      } else {
-        console.error("Unexpected response format:", response.data);
-        // Handle HTML response or other formats
+      } catch (error) {
+        // Log an error if there's an issue with the API request
+        console.error("Error fetching total scans:", error);
+        // Optionally display an error message to the user
       }
-    } catch (error) {
-      console.error("Error fetching total scans:", error);
-  
-    }
-  })();
-}, []);
-// ✅ Add dependency array here to run once on mount
+    })();
+  }, []); // ✅ Empty dependency array ensures this effect runs only once after the initial render
 
-
-  
+  // Data for the dashboard, including statistics, quick actions, and recent activity
   const dashboardData = {
     stats: [
       {
@@ -169,6 +172,7 @@ const Dashboard = () => {
 
   return (
     <div>
+      {/* Dashboard header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800">
           Welcome to PneumoDetect
@@ -238,6 +242,7 @@ const Dashboard = () => {
         </h2>
         <div className="space-y-4">
           {dashboardData.recentActivity.map((activity, index) => {
+            // For the first recent activity item, display patient ID and name
             let titleContent = activity.title;
             if (index === 0) {
               const storedPatient = localStorage.getItem("patientData");

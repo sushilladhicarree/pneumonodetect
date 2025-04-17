@@ -1,18 +1,24 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "./context/authContext";
-import "./NavBar.css";
+import "./NavBar.css"; // Import the CSS file for styling
 
+// Define the NavBar functional component
 const NavBar = () => {
+  // State to manage the visibility of the mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // Access the logout function from the authentication context
   const { logout } = useAuth();
+  // Hook to enable programmatic navigation
   const navigate = useNavigate();
 
+  // Function to handle user logout
   const handleLogout = () => {
-    logout();
-    navigate("/login");
+    logout(); // Call the logout function from the auth context
+    navigate("/login"); // Navigate the user back to the login page
   };
 
+  // Array of navigation items with their respective paths, titles, and icons
   const navItems = [
     {
       to: "/dashboard",
@@ -92,7 +98,9 @@ const NavBar = () => {
 
   return (
     <aside className={`navbar-sidebar${isMobileMenuOpen ? " open" : ""}`}>
+      {/* Logo of the application */}
       <div className="navbar-logo">PneumoDetect</div>
+      {/* Navigation links */}
       <nav className="navbar-links">
         {navItems.map((item) => (
           <NavLink
@@ -101,14 +109,16 @@ const NavBar = () => {
             className={({ isActive }) =>
               isActive ? "navbar-link active" : "navbar-link"
             }
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={() => setIsMobileMenuOpen(false)} // Close mobile menu on link click
           >
             <span className="navbar-link-icon">{item.icon}</span>
             {item.title}
           </NavLink>
         ))}
       </nav>
+      {/* User profile information and logout button */}
       <div className="navbar-profile">
+        {/* Profile icon */}
         <div className="navbar-profile-icon">
           <svg
             className="nav-icon"
@@ -124,11 +134,13 @@ const NavBar = () => {
             ></path>
           </svg>
         </div>
+        {/* User name and role/affiliation */}
         <div className="navbar-profile-info">
           <div className="navbar-profile-name">Admin</div>
           <div className="navbar-profile-email">Gandaki Hospital</div>
         </div>
-        <button 
+        {/* Logout button */}
+        <button
           onClick={handleLogout}
           className="navbar-logout-button"
           title="Logout"
@@ -148,6 +160,7 @@ const NavBar = () => {
           </svg>
         </button>
       </div>
+      {/* Mobile menu toggle button */}
       <button
         className="navbar-mobile-toggle"
         onClick={() => setIsMobileMenuOpen((open) => !open)}
@@ -158,6 +171,7 @@ const NavBar = () => {
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
+          {/* Conditional rendering of the toggle icon based on menu state */}
           {isMobileMenuOpen ? (
             <path
               strokeLinecap="round"

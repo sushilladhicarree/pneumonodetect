@@ -18,7 +18,7 @@ report_date: string;
 notes?: string;
 }
 
-export interface AnalysisResult {
+export interface AnalysisResult { 
 id: number;
 confidence: number;
 result: "Normal" | "Pneumonia";

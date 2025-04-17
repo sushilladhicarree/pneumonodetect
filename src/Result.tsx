@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { PatientReport } from "./types";
 
+// Interface defining the structure of patient data
 interface PatientData {
   id: string;
   name: string;
@@ -23,12 +24,12 @@ interface PatientData {
 const Result: React.FC = () => {
   const navigate = useNavigate();
 
-  // Processing state
+  // State for processing status and errors
   const [isProcessing, setIsProcessing] = useState(true);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Analysis data
+  // State for analysis results
   const [confidenceScore, setConfidenceScore] = useState(0);
   const [hasPneumonia, setHasPneumonia] = useState(false);
   const [analysisTime, setAnalysisTime] = useState("");
@@ -40,20 +41,23 @@ const Result: React.FC = () => {
     phone: "",
   });
 
-  // Search and filtering
+  // State for search and filtering
   const [searchQuery, setSearchQuery] = useState("");
   const [resultFilter, setResultFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("30");
   const [searchResults, setSearchResults] = useState<any[]>([]);
 
-  // Reports
+  // State for reports data
   const [reports, setReports] = useState<PatientReport[]>([]);
   const [filteredReports, setFilteredReports] = useState<PatientReport[]>([]);
   const [modalImage, setModalImage] = useState<string | null>(null);
   const [isLoadingReports, setIsLoadingReports] = useState(true);
   const [reportsError, setReportsError] = useState("");
 
-  // Get data from localStorage and setup
+  /**
+   * Effect to load patient data from localStorage and simulate analysis
+   * Runs once when component mounts
+   */
   useEffect(() => {
     const checkAndLoadData = () => {
       const stored = localStorage.getItem("patientData");
@@ -80,7 +84,7 @@ const Result: React.FC = () => {
     const hasData = checkAndLoadData();
 
     if (hasData) {
-      // Simulate or fetch analysis results
+      // Simulate analysis processing with timeout
       const timer = setTimeout(() => {
         try {
           const analysisData = localStorage.getItem("analysisData");
@@ -99,6 +103,7 @@ const Result: React.FC = () => {
           setIsProcessing(false);
         } catch (error) {
           console.error("Error processing analysis data:", error);
+          // Fallback values if error occurs
           setConfidenceScore(90);
           setHasPneumonia(true);
           setAnalysisTime(new Date().toLocaleTimeString());
@@ -110,7 +115,10 @@ const Result: React.FC = () => {
     }
   }, []);
 
-  // Fetch reports data
+  /**
+   * Effect to fetch historical reports from API
+   * Runs when component mounts and when isError changes
+   */
   useEffect(() => {
     const fetchReports = async () => {
       setIsLoadingReports(true);
@@ -145,7 +153,10 @@ const Result: React.FC = () => {
     }
   }, [isError]);
 
-  // Handle search functionality
+  /**
+   * Handles search functionality for patient records
+   * @param e - Change event from search input
+   */
   const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -182,13 +193,16 @@ const Result: React.FC = () => {
     }
   };
 
-  // Apply filters to reports
+  /**
+   * Effect to apply filters to reports based on selected criteria
+   * Runs when reports, resultFilter, timeFilter, or searchResults change
+   */
   useEffect(() => {
     if (reports.length === 0 || searchResults.length > 0) return;
 
     let filtered = [...reports];
 
-    // Filter by result type
+    // Filter by result type (Pneumonia/Normal)
     if (resultFilter) {
       filtered = filtered.filter((report) =>
         resultFilter === "pneumonia"
@@ -212,12 +226,20 @@ const Result: React.FC = () => {
     setFilteredReports(filtered);
   }, [reports, resultFilter, timeFilter, searchResults.length]);
 
-  // Navigate back to upload
+  /**
+   * Navigates back to the upload page
+   */
   const handleBackToUpload = () => {
     navigate("/upload");
   };
 
-  // Render patient info cards
+  /**
+   * Renders a patient information card with icon
+   * @param label - Information label (e.g., "Patient Name")
+   * @param value - Information value (e.g., "John Doe")
+   * @param icon - React node containing the icon to display
+   * @returns JSX element for the info card
+   */
   const renderPatientInfo = (
     label: string,
     value: string,
@@ -234,7 +256,7 @@ const Result: React.FC = () => {
     </div>
   );
 
-  // Error state view
+  // Render error state if there's an error loading data
   if (isError) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -257,6 +279,7 @@ const Result: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Processing state */}
         {isProcessing ? (
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
@@ -269,6 +292,7 @@ const Result: React.FC = () => {
           </div>
         ) : (
           <>
+            {/* Header section with back button */}
             <div className="mb-8 flex justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -285,6 +309,7 @@ const Result: React.FC = () => {
               </button>
             </div>
 
+            {/* Patient information cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               {renderPatientInfo(
                 "Patient Name",
@@ -308,7 +333,9 @@ const Result: React.FC = () => {
               )}
             </div>
 
+            {/* Main results section with image and analysis */}
             <div className="grid md:grid-cols-3 gap-6 mb-8">
+              {/* X-ray image display */}
               <div className="bg-white rounded-lg shadow-sm p-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">
                   X-ray Image
@@ -330,7 +357,9 @@ const Result: React.FC = () => {
                 </div>
               </div>
 
+              {/* Analysis results */}
               <div className="md:col-span-2 bg-white rounded-lg shadow-sm p-6">
+                {/* Result status (Pneumonia/Normal) */}
                 <div
                   className={`p-6 rounded-lg mb-6 ${
                     hasPneumonia ? "bg-red-50" : "bg-green-50"
@@ -393,6 +422,7 @@ const Result: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Additional metrics */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="p-4 bg-gray-50 rounded-lg">
                     <p className="text-sm text-gray-600">Processing Time</p>
@@ -404,6 +434,7 @@ const Result: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Confidence score visualization */}
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-2">
                     Confidence Score
@@ -421,11 +452,13 @@ const Result: React.FC = () => {
               </div>
             </div>
 
+            {/* Historical reports section */}
             <div className="bg-white rounded-lg shadow-sm mt-8">
               <div className="p-6 border-b border-gray-200">
                 <h2 className="text-xl font-bold text-gray-900">
                   Analysis History
                 </h2>
+                {/* Search and filter controls */}
                 <div className="flex flex-wrap gap-4 mt-4">
                   <div className="flex-1 min-w-[200px]">
                     <div className="relative">
@@ -462,17 +495,20 @@ const Result: React.FC = () => {
                 </div>
               </div>
 
+              {/* Loading state for reports */}
               {isLoadingReports ? (
                 <div className="p-10 text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4" />
                   <p className="text-gray-600">Loading reports...</p>
                 </div>
               ) : reportsError ? (
+                // Error state for reports
                 <div className="p-10 text-center">
                   <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-4" />
                   <p className="text-red-600">{reportsError}</p>
                 </div>
               ) : (
+                // Reports table
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
@@ -495,17 +531,19 @@ const Result: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
+                      {/* Check if there are any reports to display */}
                       {(searchResults.length > 0
                         ? searchResults
                         : filteredReports
                       ).length > 0 ? (
+                        // Map through reports or search results
                         (searchResults.length > 0
                           ? searchResults
                           : filteredReports
                         ).map((entry, index) => (
                           <tr key={index} className="hover:bg-gray-50">
                             {entry.report_date ? (
-                              // Render report entry
+                              // Render report entry if it's a report
                               <>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                   <div className="text-sm font-medium text-gray-900">
@@ -620,6 +658,7 @@ const Result: React.FC = () => {
                           </tr>
                         ))
                       ) : (
+                        // Empty state when no reports match filters
                         <tr>
                           <td
                             colSpan={5}
@@ -638,7 +677,7 @@ const Result: React.FC = () => {
         )}
       </div>
 
-      {/* Image modal */}
+      {/* Modal for viewing full-size images */}
       {modalImage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
           <div className="relative bg-white p-4 rounded shadow-lg max-w-3xl w-full">
