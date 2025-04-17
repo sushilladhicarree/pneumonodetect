@@ -45,3 +45,11 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - Inspired by various pneumonia detection research papers.
 - Thanks to [Bikalpa KC](https://github.com/bikalpakc) and [Sadikshya Poudel](https://github.com/sadikshya0) for their huge contributions in making this project possible.
+
+## Screenshots
+<p align="center">
+  <img src="images/login.png" width="800" alt="Working demo - Login Page">
+  <img src="images/dashboard.png" width="800" alt="Working demo - Dashboard page">
+  <img src="images/upload.png" width="800" alt="Working demo - Upload Page">
+  <img src="images/result.png" width="800" alt="Working demo - Result Page">
+</p>
